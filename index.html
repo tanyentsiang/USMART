@@ -38,15 +38,13 @@
         .add-btn:hover { filter: brightness(0.95); }
         .loading-state { text-align: center; padding: 40px; color: #666; font-size: 13px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
         .builder-panel { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 650px; background: #ffffff; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 15px; box-sizing: border-box; z-index: 999; }
-        .builder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .builder-title { font-size: 13px; font-weight: bold; color: #333; }
         .builder-textarea { width: 100%; height: 120px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; box-sizing: border-box; font-family: inherit; font-size: 13px; resize: none; outline: none; }
         .builder-textarea:focus { border-color: #28a745; }
-        .builder-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-        .action-btn { padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; }
+        .builder-actions { display: flex; gap: 10px; margin-top: 10px; width: 100%; }
+        .action-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; }
         .clear-btn { background-color: #6c757d; color: white; }
         .main-copy-btn { background-color: #28a745; color: white; }
-        .notification { position: fixed; bottom: 230px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; }
+        .notification { position: fixed; bottom: 210px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; }
     </style>
 </head>
 <body>
@@ -61,9 +59,6 @@
 </div>
 
 <div class="builder-panel">
-    <div class="builder-header">
-        <div class="builder-title">Response Customizer / 消息编辑栏</div>
-    </div>
     <textarea id="draftArea" class="builder-textarea" placeholder="Click 'Add' buttons to load reply templates and edit your response here..."></textarea>
     <div class="builder-actions">
         <button class="action-btn clear-btn" onclick="clearDraft()">Clear / 清空</button>
@@ -88,80 +83,4 @@
                     document.getElementById('faq-container').innerHTML = '<div class="loading-state">No data found in your Google Sheet.</div>';
                 }
             },
-            error: function(error) {
-                document.getElementById('faq-container').innerHTML = '<div class="loading-state" style="color: #d64545;"><strong>Sync Error:</strong> Failed to load data. Ensure sheet is published as CSV.</div>';
-            }
-        });
-    };
-
-    function buildDashboard(data) {
-        const container = document.getElementById('faq-container');
-        container.innerHTML = '';
-        const categories = {};
-        
-        data.forEach(row => {
-            const catID = row['Category ID'];
-            const catName = row['Category Name (Bilingual)'];
-            const title = row['FAQ Title'];
-            const enReply = row['English Response Template'];
-            const cnReply = row['Chinese Response Template'];
-            if (!catID || !title) return;
-            const groupKey = `${catID}|${catName}`;
-            if (!categories[groupKey]) categories[groupKey] = [];
-            categories[groupKey].push({ title, en: enReply, cn: cnReply });
-        });
-
-        for (const key in categories) {
-            const [catID, catName] = key.split('|');
-            const items = categories[key];
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'category-container';
-            categoryDiv.innerHTML = `<div class="category-title">${catID}. ${catName}</div>`;
-            items.forEach(item => {
-                const faqItem = document.createElement('div');
-                faqItem.className = 'faq-item';
-                faqItem.innerHTML = `
-                    <div class="faq-info">
-                        <div class="faq-title">${item.title}</div>
-                        <div class="faq-preview">${(item.en || '').substring(0, 55)}...</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="add-btn en-btn">Add EN</button>
-                        <button class="add-btn cn-btn">添加中文</button>
-                    </div>
-                `;
-                faqItem.querySelector('.en-btn').onclick = () => appendToDraft(item.en);
-                faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
-                categoryDiv.appendChild(faqItem);
-            });
-            container.appendChild(categoryDiv);
-        }
-    }
-
-    function appendToDraft(text) {
-        const draftArea = document.getElementById("draftArea");
-        draftArea.value += (draftArea.value ? "\n\n" : "") + (text || "");
-    }
-
-    function clearDraft() { document.getElementById("draftArea").value = ""; }
-
-    function copyCombinedText() {
-        const text = document.getElementById("draftArea").value.trim();
-        const btn = document.getElementById("mainCopyBtn");
-        if (!text) return alert("Customizer is empty!");
-        navigator.clipboard.writeText(text).then(() => {
-            const toast = document.getElementById("toast");
-            toast.style.display = "block";
-            setTimeout(() => { toast.style.display = "none"; }, 1500);
-        });
-    }
-
-    function filterFAQ() {
-        let input = document.getElementById('searchBox').value.toLowerCase();
-        Array.from(document.getElementsByClassName('faq-item')).forEach(item => {
-            item.style.display = item.innerText.toLowerCase().includes(input) ? "flex" : "none";
-        });
-    }
-</script>
-</body>
-</html>
+            error: function(error
