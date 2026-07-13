@@ -2,25 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RMs Dashboard</title>
+    <title>RMs Reply Optimisation Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; }
+        .faq-item { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        .thumb { max-width: 100px; display: block; margin: 5px 0; }
+        .btn-group { margin-top: 10px; }
+        .btn { padding: 8px; cursor: pointer; }
+        #builder { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; padding: 20px; border-top: 2px solid #ccc; }
+        textarea { width: 90%; height: 80px; }
+    </style>
 </head>
 <body>
-    <div id="app">Loading...</div>
-    <script>
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv";
-        
-        Papa.parse(CSV_URL, {
-            download: true,
-            header: true,
-            complete: function(results) {
-                document.getElementById('app').innerHTML = "Dashboard Loaded Successfully!";
-                console.log("Data:", results.data);
-            },
-            error: function(err) {
-                document.getElementById('app').innerHTML = "Error: " + err;
-            }
-        });
-    </script>
+
+<div id="faq-container">Loading your matrices...</div>
+
+<div id="builder">
+    <textarea id="draftArea" placeholder="Compose your reply here..."></textarea><br>
+    <button onclick="copyText()">Copy Text</button>
+</div>
+
+<script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv";
+
+    Papa.parse(CSV_URL, {
+        download: true, header: true,
+        complete: function(results) {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = '';
+            results.data.forEach(row => {
+                if (!row['FAQ Title']) return;
+                const div = document.createElement('div');
+                div.className = 'faq-item';
+                div.innerHTML = `
+                    <b>${row['FAQ Title']}</b><br>
+                    ${row.Image ? `<img src="${row.Image}" class="thumb">` : ''}
+                    <div class="btn-group">
+                        <button class="btn" onclick="addToDraft('${row['English Response Template']}')">Add EN</button>
+                        <button class="btn" onclick="addToDraft('${row['Chinese Response Template']}')">添加中文</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    });
+
+    function addToDraft(text) {
+        document.getElementById("draftArea").value += text + "\n\n";
+    }
+
+    function copyText() {
+        const copyText = document.getElementById("draftArea");
+        copyText.select();
+        document.execCommand("copy");
+        alert("Copied to clipboard!");
+    }
+</script>
 </body>
 </html>
