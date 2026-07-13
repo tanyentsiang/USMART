@@ -1,39 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RMs Reply Optimisation Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; background-color: #f4f6f9; padding: 20px; padding-bottom: 250px; color: #333; }
-        .container { max-width: 650px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { font-size: 18px; margin-top: 0; }
-        .category-title { font-size: 11px; font-weight: bold; color: #007bff; text-transform: uppercase; margin: 15px 0 8px; border-bottom: 1px solid #eef2f5; padding-bottom: 4px; }
-        .faq-item { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eaeaea; }
-        .faq-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-        .btn-group { display: flex; gap: 6px; }
-        .add-btn { background-color: #e7f1ff; color: #007bff; border: 1px solid #b8daff; padding: 6px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .builder-panel { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 650px; background: #fff; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); padding: 15px; box-sizing: border-box; }
-        .builder-textarea { width: 100%; height: 100px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; }
-        .main-copy-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>Frontline Operations Optimization Dashboard</h2>
-    <div id="faq-container">⏳ Fetching latest operations matrices...</div>
-</div>
-
-<div class="builder-panel">
-    <textarea id="draftArea" class="builder-textarea" placeholder="Selected replies appear here..."></textarea>
-    <button class="main-copy-btn" id="mainCopyBtn" onclick="copyCombinedText()">Copy Message</button>
-</div>
-
 <script>
-    // Proxy URL used to bypass browser security blocks
     const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv");
+    let activeImages = []; // Stores the visual aids for the current session
 
     window.onload = () => {
         Papa.parse(CSV_URL, {
@@ -47,9 +14,10 @@
                     div.className = 'faq-item';
                     div.innerHTML = `
                         <div class="faq-title">${row['FAQ Title']}</div>
+                        ${row.Image ? `<img src="${row.Image}" style="max-width:80px; display:block; margin:5px 0; border-radius:4px;">` : ''}
                         <div class="btn-group">
-                            <button class="add-btn" onclick="addToDraft('${row['English Response Template']}')">Add EN</button>
-                            <button class="add-btn" style="background:#f3f0fa; color:#6f42c1;" onclick="addToDraft('${row['Chinese Response Template']}')">添加中文</button>
+                            <button class="add-btn" onclick="addToDraft('${row['English Response Template']}', '${row.Image}')">Add EN + Image</button>
+                            <button class="add-btn" style="background:#f3f0fa; color:#6f42c1;" onclick="addToDraft('${row['Chinese Response Template']}', '${row.Image}')">添加中文 + 图片</button>
                         </div>
                     `;
                     container.appendChild(div);
@@ -58,16 +26,19 @@
         });
     };
 
-    function addToDraft(text) {
-        document.getElementById("draftArea").value += (document.getElementById("draftArea").value ? "\n\n" : "") + text;
+    function addToDraft(text, imgUrl) {
+        const area = document.getElementById("draftArea");
+        area.value += (area.value ? "\n\n" : "") + text;
+        if (imgUrl && imgUrl !== 'undefined') {
+            area.value += "\n[Visual Aid: " + imgUrl + "]";
+            activeImages.push(imgUrl);
+        }
     }
 
     function copyCombinedText() {
         const area = document.getElementById("draftArea");
         area.select();
         document.execCommand("copy");
-        alert("Message copied to clipboard!");
+        alert("Text and visual aid links copied!");
     }
 </script>
-</body>
-</html>
