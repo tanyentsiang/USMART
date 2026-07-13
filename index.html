@@ -47,13 +47,15 @@
         .main-copy-btn { background-color: #28a745; color: white; }
         .notification { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; white-space: nowrap; }
 
-        /* Modal Styling (For Image Previews) */
+        /* Modal Styling */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        .modal-content { background: white; padding: 15px; border-radius: 12px; max-width: 80%; max-height: 90vh; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .modal-content img { max-width: 100%; max-height: 75vh; border-radius: 6px; object-fit: contain; }
-        .modal-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .modal-instructions { font-size: 12px; color: #666; font-weight: bold; }
-        .close-modal-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .modal-content { background: white; padding: 20px; border-radius: 12px; max-width: 80%; max-height: 90vh; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 300px; }
+        .modal-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-instructions { font-size: 14px; color: #333; font-weight: bold; }
+        .close-modal-btn { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        #modalImgSrc { max-width: 100%; max-height: 70vh; border-radius: 6px; object-fit: contain; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: block; }
+        #modalError { display: none; color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 6px; text-align: center; margin-top: 10px; font-size: 13px; width: 100%; box-sizing: border-box; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
@@ -81,10 +83,16 @@
 <div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span class="modal-instructions">👉 Right-click image to copy</span>
+            <span class="modal-instructions">👉 Right-click image and select "Copy image"</span>
             <button class="close-modal-btn" onclick="closeModal(event)">Close</button>
         </div>
-        <img id="modalImgSrc" src="" alt="Guide Preview">
+        
+        <div id="modalError">
+            <strong>⚠️ Failed to load image.</strong><br><br>
+            Check the link in your Google Sheet and ensure it is a direct raw image URL.
+        </div>
+        
+        <img id="modalImgSrc" src="" alt="Guide Preview" onerror="showError()">
     </div>
 </div>
 
@@ -120,7 +128,7 @@
             const title = row['FAQ Title'];
             const enReply = row['English Response Template'];
             const cnReply = row['Chinese Response Template'];
-            const guideUrl = row['Guide URL'] || ''; // Grabs the link if it exists
+            const guideUrl = row['Guide URL'] || ''; 
             
             if (!catID || !title) return;
             const groupKey = `${catID}|${catName}`;
@@ -139,9 +147,8 @@
                 const faqItem = document.createElement('div');
                 faqItem.className = 'faq-item';
                 
-                // Only generate the button if a valid URL exists
                 const viewGuideBtn = (item.guide.trim().length > 5) 
-                    ? `<button class="add-btn guide-btn">🖼️ View</button>` 
+                    ? `<button class="add-btn guide-btn">🖼️ View Guide</button>` 
                     : '';
 
                 faqItem.innerHTML = `
@@ -193,16 +200,22 @@
         });
     }
 
-    // Modal Control Functions
     function openImageModal(url) {
+        document.getElementById('modalError').style.display = 'none';
+        document.getElementById('modalImgSrc').style.display = 'block';
         document.getElementById('modalImgSrc').src = url;
         document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    function showError() {
+        document.getElementById('modalImgSrc').style.display = 'none';
+        document.getElementById('modalError').style.display = 'block';
     }
 
     function closeModal(event) {
         if(event) event.stopPropagation();
         document.getElementById('imageModal').style.display = 'none';
-        document.getElementById('modalImgSrc').src = '';
+        document.getElementById('modalImgSrc').src = ''; 
     }
 </script>
 </body>
