@@ -1,6 +1,5 @@
 <script>
     const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv");
-    let activeImages = []; // Stores the visual aids for the current session
 
     window.onload = () => {
         Papa.parse(CSV_URL, {
@@ -8,19 +7,24 @@
             complete: (results) => {
                 const container = document.getElementById('faq-container');
                 container.innerHTML = '';
-                results.data.forEach(row => {
+                results.data.forEach((row, index) => {
                     if (!row['FAQ Title']) return;
+                    
                     const div = document.createElement('div');
                     div.className = 'faq-item';
                     div.innerHTML = `
                         <div class="faq-title">${row['FAQ Title']}</div>
                         ${row.Image ? `<img src="${row.Image}" style="max-width:80px; display:block; margin:5px 0; border-radius:4px;">` : ''}
                         <div class="btn-group">
-                            <button class="add-btn" onclick="addToDraft('${row['English Response Template']}', '${row.Image}')">Add EN + Image</button>
-                            <button class="add-btn" style="background:#f3f0fa; color:#6f42c1;" onclick="addToDraft('${row['Chinese Response Template']}', '${row.Image}')">添加中文 + 图片</button>
+                            <button class="add-btn" id="en-${index}">Add EN + Image</button>
+                            <button class="add-btn" id="cn-${index}" style="background:#f3f0fa; color:#6f42c1;">添加中文 + 图片</button>
                         </div>
                     `;
                     container.appendChild(div);
+
+                    // Safely attach the data without breaking the code
+                    document.getElementById(`en-${index}`).onclick = () => addToDraft(row['English Response Template'], row.Image);
+                    document.getElementById(`cn-${index}`).onclick = () => addToDraft(row['Chinese Response Template'], row.Image);
                 });
             }
         });
@@ -28,10 +32,9 @@
 
     function addToDraft(text, imgUrl) {
         const area = document.getElementById("draftArea");
-        area.value += (area.value ? "\n\n" : "") + text;
-        if (imgUrl && imgUrl !== 'undefined') {
+        area.value += (area.value ? "\n\n" : "") + (text || "");
+        if (imgUrl && imgUrl.trim() !== "") {
             area.value += "\n[Visual Aid: " + imgUrl + "]";
-            activeImages.push(imgUrl);
         }
     }
 
@@ -39,6 +42,6 @@
         const area = document.getElementById("draftArea");
         area.select();
         document.execCommand("copy");
-        alert("Text and visual aid links copied!");
+        alert("Message copied!");
     }
 </script>
