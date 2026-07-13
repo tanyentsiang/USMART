@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RMs Reply Optimisation Dashboard</title>
-    <!-- PapaParse Library for reading Google Sheets CSV data safely -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         body {
@@ -12,7 +11,7 @@
             background-color: #f4f6f9;
             margin: 0;
             padding: 15px;
-            padding-bottom: 220px; /* Space for the fixed builder window */
+            padding-bottom: 220px;
             color: #333;
         }
         .container {
@@ -23,183 +22,31 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        h2 {
-            font-size: 18px;
-            margin-top: 0;
-            color: #1a1a1a;
-        }
-        .subtitle {
-            font-size: 11px;
-            color: #666;
-            margin-top: -10px;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-        .search-bar {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
-            margin-bottom: 15px;
-            outline: none;
-        }
-        .search-bar:focus {
-            border-color: #007bff;
-        }
-        .category-container {
-            margin-bottom: 20px;
-        }
-        .category-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #007bff;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 15px;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #eef2f5;
-            padding-bottom: 4px;
-        }
-        .faq-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid #eaeaea;
-        }
-        .faq-info {
-            flex-grow: 1;
-            padding-right: 15px;
-            overflow: hidden;
-        }
-        .faq-title {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-        .faq-preview {
-            font-size: 11px;
-            color: #666;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .btn-group {
-            display: flex;
-            gap: 6px;
-        }
-        .add-btn {
-            background-color: #e7f1ff;
-            color: #007bff;
-            border: 1px solid #b8daff;
-            padding: 8px 10px;
-            font-size: 11px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .add-btn.cn-btn {
-            background-color: #f3f0fa;
-            color: #6f42c1;
-            border-color: #d6cce9;
-        }
-        .add-btn:hover {
-            filter: brightness(0.95);
-        }
-        .loading-state {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 13px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px dashed #ccc;
-        }
-        
-        /* Fixed Message Builder Panel */
-        .builder-panel {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 650px;
-            background: #ffffff;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            padding: 15px;
-            box-sizing: border-box;
-            z-index: 999;
-        }
-        .builder-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .builder-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: #333;
-        }
-        .builder-textarea {
-            width: 100%;
-            height: 120px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            padding: 8px;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 13px;
-            resize: none;
-            outline: none;
-        }
-        .builder-textarea:focus {
-            border-color: #28a745;
-        }
-        .builder-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .action-btn {
-            padding: 8px 14px;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            border: none;
-        }
-        .clear-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        .main-copy-btn {
-            background-color: #28a745;
-            color: white;
-        }
-        .notification {
-            position: fixed;
-            bottom: 230px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #323232;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            display: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
+        h2 { font-size: 18px; margin-top: 0; color: #1a1a1a; }
+        .subtitle { font-size: 11px; color: #666; margin-top: -10px; margin-bottom: 15px; font-weight: 500; }
+        .search-bar { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; outline: none; }
+        .search-bar:focus { border-color: #007bff; }
+        .category-container { margin-bottom: 20px; }
+        .category-title { font-size: 11px; font-weight: bold; color: #007bff; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid #eef2f5; padding-bottom: 4px; }
+        .faq-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eaeaea; }
+        .faq-info { flex-grow: 1; padding-right: 15px; overflow: hidden; }
+        .faq-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+        .faq-preview { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-group { display: flex; gap: 6px; }
+        .add-btn { background-color: #e7f1ff; color: #007bff; border: 1px solid #b8daff; padding: 8px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+        .add-btn.cn-btn { background-color: #f3f0fa; color: #6f42c1; border-color: #d6cce9; }
+        .add-btn:hover { filter: brightness(0.95); }
+        .loading-state { text-align: center; padding: 40px; color: #666; font-size: 13px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
+        .builder-panel { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 650px; background: #ffffff; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 15px; box-sizing: border-box; z-index: 999; }
+        .builder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .builder-title { font-size: 13px; font-weight: bold; color: #333; }
+        .builder-textarea { width: 100%; height: 120px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; box-sizing: border-box; font-family: inherit; font-size: 13px; resize: none; outline: none; }
+        .builder-textarea:focus { border-color: #28a745; }
+        .builder-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        .action-btn { padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; }
+        .clear-btn { background-color: #6c757d; color: white; }
+        .main-copy-btn { background-color: #28a745; color: white; }
+        .notification { position: fixed; bottom: 230px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; }
     </style>
 </head>
 <body>
@@ -207,22 +54,15 @@
 <div class="container">
     <h2>Frontline Operations Optimization Dashboard</h2>
     <div class="subtitle">Bilingual Response Matrix | Architecture: Google Sheets Cloud Sync</div>
-    
     <input type="text" id="searchBox" class="search-bar" placeholder="Search matrices or keywords (e.g., funding, 入金, options)..." onkeyup="filterFAQ()">
-
-    <!-- DYNAMIC CONTAINER: This is where the Google Sheet data will be injected -->
     <div id="faq-container">
-        <div class="loading-state">
-            ⏳ Connecting to Google Sheets database... Fetching latest operations matrices...
-        </div>
+        <div class="loading-state">⏳ Connecting to Google Sheets database... Fetching latest operations matrices...</div>
     </div>
 </div>
 
-<!-- FIXED WORKSPACE CANVAS BUILDER -->
 <div class="builder-panel">
     <div class="builder-header">
         <div class="builder-title">Response Customizer / 消息编辑栏</div>
-        <div style="font-size: 11px; color: #888;">Combine templates above and edit freely below</div>
     </div>
     <textarea id="draftArea" class="builder-textarea" placeholder="Click 'Add' buttons to load reply templates and edit your response here..."></textarea>
     <div class="builder-actions">
@@ -234,186 +74,94 @@
 <div id="toast" class="notification">Message text copied directly to clipboard!</div>
 
 <script>
-    // ==========================================
-    // 1. CLOUD SYNC CONFIGURATION
-    // Paste your Google Sheets "Publish to Web" CSV URL here:
-    // ==========================================
-    const GOOGLE_SHEET_CSV_URL = "YOUR_PUBLISHED_CSV_URL_HERE";
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv";
 
-    // Initializes the fetch process when the dashboard opens
     window.onload = function() {
-        if (GOOGLE_SHEET_CSV_URL === "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv" || !GOOGLE_SHEET_CSV_URL) {
-            document.getElementById('faq-container').innerHTML = `
-                <div class="loading-state" style="color: #d64545;">
-                    <strong>Setup Required:</strong><br><br>Please replace "YOUR_PUBLISHED_CSV_URL_HERE" in the code with your actual Google Sheet CSV link.
-                </div>`;
-            return;
-        }
-
-        // Fetch and parse the CSV using PapaParse
         Papa.parse(GOOGLE_SHEET_CSV_URL, {
             download: true,
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                buildDashboard(results.data);
+                if (results.data.length > 0) {
+                    buildDashboard(results.data);
+                } else {
+                    document.getElementById('faq-container').innerHTML = '<div class="loading-state">No data found in your Google Sheet.</div>';
+                }
             },
             error: function(error) {
-                console.error("Database sync error: ", error);
-                document.getElementById('faq-container').innerHTML = `
-                    <div class="loading-state" style="color: #d64545;">
-                        <strong>Sync Error:</strong> Failed to load the Google Sheet. Ensure the sheet is published to the web as a CSV.
-                    </div>`;
+                document.getElementById('faq-container').innerHTML = '<div class="loading-state" style="color: #d64545;"><strong>Sync Error:</strong> Failed to load data. Ensure sheet is published as CSV.</div>';
             }
         });
     };
 
-    // Builds the HTML cards dynamically from the parsed Google Sheet data
     function buildDashboard(data) {
         const container = document.getElementById('faq-container');
-        container.innerHTML = ''; // Clear loading message
-
-        // Group rows by Category ID and Category Name
+        container.innerHTML = '';
         const categories = {};
         
         data.forEach(row => {
-            // Check headers mapping safety
             const catID = row['Category ID'];
             const catName = row['Category Name (Bilingual)'];
             const title = row['FAQ Title'];
             const enReply = row['English Response Template'];
             const cnReply = row['Chinese Response Template'];
-
-            if (!catID || !title) return; // Skip broken or empty rows
-
+            if (!catID || !title) return;
             const groupKey = `${catID}|${catName}`;
-            
-            if (!categories[groupKey]) {
-                categories[groupKey] = [];
-            }
-            
-            categories[groupKey].push({
-                title: title,
-                en: enReply,
-                cn: cnReply
-            });
+            if (!categories[groupKey]) categories[groupKey] = [];
+            categories[groupKey].push({ title, en: enReply, cn: cnReply });
         });
 
-        // Generate HTML DOM elements for each category and item
         for (const key in categories) {
             const [catID, catName] = key.split('|');
             const items = categories[key];
-
-            // Create Category Block
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'category-container';
-
-            // Create Category Header
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'category-title';
-            titleDiv.innerText = `${catID.padStart(2, '0')}. ${catName}`;
-            categoryDiv.appendChild(titleDiv);
-
-            // Populate Cards
+            categoryDiv.innerHTML = `<div class="category-title">${catID}. ${catName}</div>`;
             items.forEach(item => {
                 const faqItem = document.createElement('div');
                 faqItem.className = 'faq-item';
-
-                // Create a clean preview snippet
-                let previewText = (item.en || '').substring(0, 55).replace(/\n/g, ' ') + '...';
-
                 faqItem.innerHTML = `
                     <div class="faq-info">
                         <div class="faq-title">${item.title}</div>
-                        <div class="faq-preview">${previewText}</div>
+                        <div class="faq-preview">${(item.en || '').substring(0, 55)}...</div>
                     </div>
                     <div class="btn-group">
                         <button class="add-btn en-btn">Add EN</button>
                         <button class="add-btn cn-btn">添加中文</button>
                     </div>
                 `;
-
-                // Safely bind dynamic data to the buttons without raw string escaping issues
-                const enBtn = faqItem.querySelector('.en-btn');
-                const cnBtn = faqItem.querySelector('.cn-btn');
-
-                enBtn.onclick = function() {
-                    appendToDraft(item.en);
-                };
-
-                cnBtn.onclick = function() {
-                    appendToDraft(item.cn);
-                };
-
+                faqItem.querySelector('.en-btn').onclick = () => appendToDraft(item.en);
+                faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
                 categoryDiv.appendChild(faqItem);
             });
-
             container.appendChild(categoryDiv);
         }
     }
 
-    // Appends chosen FAQ block into the customizable text area cleanly
     function appendToDraft(text) {
-        if (!text) return; // safeguard against empty cells
         const draftArea = document.getElementById("draftArea");
-        
-        if (draftArea.value.trim().length > 0) {
-            draftArea.value += "\n\n" + text;
-        } else {
-            draftArea.value = text;
-        }
+        draftArea.value += (draftArea.value ? "\n\n" : "") + (text || "");
     }
 
-    // Clears the workspace
-    function clearDraft() {
-        document.getElementById("draftArea").value = "";
-    }
+    function clearDraft() { document.getElementById("draftArea").value = ""; }
 
-    // Copies exactly what is typed or compiled in the textbox with no extra wrappers
     function copyCombinedText() {
         const text = document.getElementById("draftArea").value.trim();
         const btn = document.getElementById("mainCopyBtn");
-        
-        if (!text) {
-            alert("Customizer is empty! Please select some templates or type text first.");
-            return;
-        }
-
+        if (!text) return alert("Customizer is empty!");
         navigator.clipboard.writeText(text).then(() => {
-            const originalText = btn.innerText;
-            btn.innerText = "Successfully Copied!";
-            btn.style.backgroundColor = "#155724";
-            
             const toast = document.getElementById("toast");
             toast.style.display = "block";
-            
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.style.backgroundColor = "#28a745";
-                toast.style.display = "none";
-            }, 1500);
-        }).catch(err => {
-            console.error('Failed to copy text block: ', err);
-            alert('Copy failed. Please manually copy the text.');
+            setTimeout(() => { toast.style.display = "none"; }, 1500);
         });
     }
 
-    // Real-time keyword filter input functionality
     function filterFAQ() {
         let input = document.getElementById('searchBox').value.toLowerCase();
-        let items = document.getElementsByClassName('faq-item');
-        
-        for (let i = 0; i < items.length; i++) {
-            let title = items[i].querySelector('.faq-title').innerText.toLowerCase();
-            let preview = items[i].querySelector('.faq-preview').innerText.toLowerCase();
-            if (title.includes(input) || preview.includes(input)) {
-                items[i].style.display = "flex";
-            } else {
-                items[i].style.display = "none";
-            }
-        }
+        Array.from(document.getElementsByClassName('faq-item')).forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(input) ? "flex" : "none";
+        });
     }
 </script>
-
 </body>
 </html>
