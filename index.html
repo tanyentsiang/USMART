@@ -6,47 +6,17 @@
     <title>RM Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
-        /* Base Layout: Full screen, no scrolling on the body */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            color: #333;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        /* Base Layout */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; margin: 0; color: #333; display: flex; height: 100vh; overflow: hidden; }
 
-        /* LEFT PANEL: 7 parts (70% width) */
-        .left-panel {
-            flex: 7;
-            padding: 30px;
-            overflow-y: auto; /* Allows scrolling only on the left side */
-            box-sizing: border-box;
-        }
+        /* LEFT PANEL: 70% width */
+        .left-panel { flex: 7; padding: 30px; overflow-y: auto; box-sizing: border-box; }
 
-        /* RIGHT PANEL: 3 parts (30% width) */
-        .right-panel {
-            flex: 3;
-            background: #ffffff;
-            padding: 20px;
-            box-shadow: -4px 0 20px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column; /* Stacks text area and buttons vertically */
-            box-sizing: border-box;
-            border-left: 1px solid #eaeaea;
-            position: relative;
-        }
+        /* RIGHT PANEL: 30% width */
+        .right-panel { flex: 3; background: #ffffff; padding: 20px; box-shadow: -4px 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; box-sizing: border-box; border-left: 1px solid #eaeaea; position: relative; }
 
         /* Left Panel Content Styling */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h2 { font-size: 18px; margin-top: 0; color: #1a1a1a; }
         .subtitle { font-size: 11px; color: #666; margin-top: -10px; margin-bottom: 15px; font-weight: 500; }
         .search-bar { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; outline: none; }
@@ -59,44 +29,38 @@
         .faq-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
         .faq-preview { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Buttons inside the FAQ List */
+        /* Buttons */
         .btn-group { display: flex; gap: 6px; }
         .add-btn { background-color: #e7f1ff; color: #007bff; border: 1px solid #b8daff; padding: 8px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; white-space: nowrap; }
         .add-btn.cn-btn { background-color: #f3f0fa; color: #6f42c1; border-color: #d6cce9; }
+        .add-btn.guide-btn { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
         .add-btn:hover { filter: brightness(0.95); }
         .loading-state { text-align: center; padding: 40px; color: #666; font-size: 13px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
 
         /* Right Panel Builder Styling */
-        .builder-textarea { 
-            width: 100%; 
-            flex-grow: 1; /* Makes the textarea fill all available vertical space */
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
-            padding: 15px; 
-            box-sizing: border-box; 
-            font-family: inherit; 
-            font-size: 13px; 
-            line-height: 1.5;
-            resize: none; 
-            outline: none; 
-            margin-bottom: 15px;
-        }
+        .builder-textarea { width: 100%; flex-grow: 1; border: 1px solid #ccc; border-radius: 6px; padding: 15px; box-sizing: border-box; font-family: inherit; font-size: 13px; line-height: 1.5; resize: none; outline: none; margin-bottom: 15px; }
         .builder-textarea:focus { border-color: #28a745; }
         .builder-actions { display: flex; gap: 10px; width: 100%; }
         .action-btn { flex: 1; padding: 12px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; transition: opacity 0.2s; }
         .action-btn:hover { opacity: 0.9; }
         .clear-btn { background-color: #6c757d; color: white; }
         .main-copy-btn { background-color: #28a745; color: white; }
-
-        /* Notification Toast */
         .notification { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; white-space: nowrap; }
+
+        /* Modal Styling (For Image Previews) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-content { background: white; padding: 15px; border-radius: 12px; max-width: 80%; max-height: 90vh; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-content img { max-width: 100%; max-height: 75vh; border-radius: 6px; object-fit: contain; }
+        .modal-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .modal-instructions { font-size: 12px; color: #666; font-weight: bold; }
+        .close-modal-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="left-panel">
     <div class="container">
-        <h2> Reply Optimisation Dashboard</h2>
+        <h2>Reply Optimisation Dashboard</h2>
         <div class="subtitle">Bilingual Response Matrix | Architecture: Google Sheets Cloud Sync</div>
         <input type="text" id="searchBox" class="search-bar" placeholder="Enter keywords (e.g., funding, 入金, options)..." onkeyup="filterFAQ()">
         <div id="faq-container">
@@ -112,6 +76,16 @@
         <button class="action-btn main-copy-btn" id="mainCopyBtn" onclick="copyCombinedText()">Copy / 复制</button>
     </div>
     <div id="toast" class="notification">Message copied!</div>
+</div>
+
+<div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-instructions">👉 Right-click image to copy</span>
+            <button class="close-modal-btn" onclick="closeModal(event)">Close</button>
+        </div>
+        <img id="modalImgSrc" src="" alt="Guide Preview">
+    </div>
 </div>
 
 <script>
@@ -146,10 +120,12 @@
             const title = row['FAQ Title'];
             const enReply = row['English Response Template'];
             const cnReply = row['Chinese Response Template'];
+            const guideUrl = row['Guide URL'] || ''; // Grabs the link if it exists
+            
             if (!catID || !title) return;
             const groupKey = `${catID}|${catName}`;
             if (!categories[groupKey]) categories[groupKey] = [];
-            categories[groupKey].push({ title, en: enReply, cn: cnReply });
+            categories[groupKey].push({ title, en: enReply, cn: cnReply, guide: guideUrl });
         });
 
         for (const key in categories) {
@@ -158,9 +134,16 @@
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'category-container';
             categoryDiv.innerHTML = `<div class="category-title">${catID}. ${catName}</div>`;
+            
             items.forEach(item => {
                 const faqItem = document.createElement('div');
                 faqItem.className = 'faq-item';
+                
+                // Only generate the button if a valid URL exists
+                const viewGuideBtn = (item.guide.trim().length > 5) 
+                    ? `<button class="add-btn guide-btn">🖼️ View</button>` 
+                    : '';
+
                 faqItem.innerHTML = `
                     <div class="faq-info">
                         <div class="faq-title">${item.title}</div>
@@ -169,10 +152,17 @@
                     <div class="btn-group">
                         <button class="add-btn en-btn">Add EN</button>
                         <button class="add-btn cn-btn">添加中文</button>
+                        ${viewGuideBtn}
                     </div>
                 `;
+                
                 faqItem.querySelector('.en-btn').onclick = () => appendToDraft(item.en);
                 faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
+                
+                if (viewGuideBtn) {
+                    faqItem.querySelector('.guide-btn').onclick = () => openImageModal(item.guide);
+                }
+                
                 categoryDiv.appendChild(faqItem);
             });
             container.appendChild(categoryDiv);
@@ -188,7 +178,7 @@
 
     function copyCombinedText() {
         const text = document.getElementById("draftArea").value.trim();
-        if (!text) return alert("Customizer is empty!");
+        if (!text) return alert("Textbox is empty!");
         navigator.clipboard.writeText(text).then(() => {
             const toast = document.getElementById("toast");
             toast.style.display = "block";
@@ -201,6 +191,18 @@
         Array.from(document.getElementsByClassName('faq-item')).forEach(item => {
             item.style.display = item.innerText.toLowerCase().includes(input) ? "flex" : "none";
         });
+    }
+
+    // Modal Control Functions
+    function openImageModal(url) {
+        document.getElementById('modalImgSrc').src = url;
+        document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    function closeModal(event) {
+        if(event) event.stopPropagation();
+        document.getElementById('imageModal').style.display = 'none';
+        document.getElementById('modalImgSrc').src = '';
     }
 </script>
 </body>
