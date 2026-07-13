@@ -1,47 +1,28 @@
-<script>
-    const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div id="faq-container">Loading...</div>
+    <script>
+        // Use your direct CSV link
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv";
 
-    window.onload = () => {
         Papa.parse(CSV_URL, {
-            download: true, header: true,
-            complete: (results) => {
+            download: true,
+            header: true,
+            complete: function(results) {
                 const container = document.getElementById('faq-container');
-                container.innerHTML = '';
-                results.data.forEach((row, index) => {
-                    if (!row['FAQ Title']) return;
-                    
-                    const div = document.createElement('div');
-                    div.className = 'faq-item';
-                    div.innerHTML = `
-                        <div class="faq-title">${row['FAQ Title']}</div>
-                        ${row.Image ? `<img src="${row.Image}" style="max-width:80px; display:block; margin:5px 0; border-radius:4px;">` : ''}
-                        <div class="btn-group">
-                            <button class="add-btn" id="en-${index}">Add EN + Image</button>
-                            <button class="add-btn" id="cn-${index}" style="background:#f3f0fa; color:#6f42c1;">添加中文 + 图片</button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-
-                    // Safely attach the data without breaking the code
-                    document.getElementById(`en-${index}`).onclick = () => addToDraft(row['English Response Template'], row.Image);
-                    document.getElementById(`cn-${index}`).onclick = () => addToDraft(row['Chinese Response Template'], row.Image);
-                });
+                container.innerHTML = "Dashboard Loaded!";
+                console.log("Data loaded:", results.data);
+            },
+            error: function(err) {
+                document.getElementById('faq-container').innerHTML = "Critical Error: " + err;
             }
         });
-    };
-
-    function addToDraft(text, imgUrl) {
-        const area = document.getElementById("draftArea");
-        area.value += (area.value ? "\n\n" : "") + (text || "");
-        if (imgUrl && imgUrl.trim() !== "") {
-            area.value += "\n[Visual Aid: " + imgUrl + "]";
-        }
-    }
-
-    function copyCombinedText() {
-        const area = document.getElementById("draftArea");
-        area.select();
-        document.execCommand("copy");
-        alert("Message copied!");
-    }
-</script>
+    </script>
+</body>
+</html>
