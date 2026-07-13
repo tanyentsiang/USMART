@@ -118,4 +118,15 @@
     }
 
     function clearDraft() {
-        document.getElementById("
+        document.getElementById("draftArea").value = "";
+    }
+
+    function copyText() {
+        const area = document.getElementById("draftArea");
+        area.select();
+        document.execCommand("copy");
+        alert("Message copied to clipboard!");
+    }
+</script>
+</body>
+</html>
