@@ -2,27 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; }
+        .item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        .thumb { max-width: 80px; display: block; margin: 5px 0; }
+        .builder { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 20px; border-top: 2px solid #ccc; box-sizing: border-box; }
+        textarea { width: 90%; height: 80px; display: block; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-    <div id="faq-container">Loading...</div>
-    <script>
-        // Use your direct CSV link
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv";
 
-        Papa.parse(CSV_URL, {
-            download: true,
-            header: true,
-            complete: function(results) {
-                const container = document.getElementById('faq-container');
-                container.innerHTML = "Dashboard Loaded!";
-                console.log("Data loaded:", results.data);
-            },
-            error: function(err) {
-                document.getElementById('faq-container').innerHTML = "Critical Error: " + err;
-            }
-        });
-    </script>
+<div id="container">Loading dashboard...</div>
+
+<div class="builder">
+    <textarea id="draft"></textarea>
+    <button onclick="copyDraft()">Copy Text + Image Links</button>
+</div>
+
+<script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSISRkhSHWqmmznY8UFaQ9jh-OFA8FH39K701TYyZ7rUMVt-NbE390axbVmXtN3hqJhGSRNjgVu4VrB/pub?output=csv";
+
+    Papa.parse(CSV_URL, {
+        download: true, header: true,
+        complete: function(results) {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+            results.data.forEach(row => {
+                if (!row['FAQ Title']) return;
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <b>${row['FAQ Title']}</b><br>
+                    ${row.Image ? `<img src="${row.Image}" class="thumb">` : ''}
+                    <button onclick="add('${row['English Response Template']}', '${row.Image || ''}')">Add EN</button>
+                    <button onclick="add('${row['Chinese Response Template']}', '${row.Image || ''}')">添加中文</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+    });
+
+    function add(text, img) {
+        let area = document.getElementById("draft");
+        area.value += text + "\n" + (img ? "[Image: " + img + "]\n" : "") + "\n";
+    }
+
+    function copyDraft() {
+        document.getElementById("draft").select();
+        document.execCommand("copy");
+        alert("Copied!");
+    }
+</script>
 </body>
 </html>
