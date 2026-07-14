@@ -54,8 +54,9 @@
         .modal-instructions { font-size: 14px; color: #333; font-weight: bold; }
         .close-modal-btn { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        #modalImgSrc { max-width: 100%; max-height: 70vh; border-radius: 6px; object-fit: contain; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: block; }
+        #modalImgSrc { max-width: 100%; max-height: 70vh; border-radius: 6px; object-fit: contain; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
         #modalError { display: none; color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 6px; text-align: center; margin-top: 10px; font-size: 13px; width: 100%; box-sizing: border-box; border: 1px solid #f5c6cb; }
+        #modalLoading { display: none; padding: 30px; color: #666; font-size: 14px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -80,19 +81,24 @@
     <div id="toast" class="notification">Message copied!</div>
 </div>
 
+<!-- Image Viewer Modal -->
 <div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span class="modal-instructions"> Right-click and select "Copy image"</span>
+            <span class="modal-instructions">👉 Right-click image and select "Copy image"</span>
             <button class="close-modal-btn" onclick="closeModal(event)">Close</button>
         </div>
+        
+        <div id="modalLoading">⏳ Loading image...</div>
         
         <div id="modalError">
             <strong>⚠️ Failed to load image.</strong><br><br>
             Check the link in your Google Sheet and ensure it is a direct raw image URL.
         </div>
         
-        <img id="modalImgSrc" src="" alt="Guide Preview" onerror="showError()">
+        <img id="modalImgSrc" src="" alt="Guide Preview" 
+             onload="hideLoader()" 
+             onerror="showError()">
     </div>
 </div>
 
@@ -167,7 +173,11 @@
                 faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
                 
                 if (viewGuideBtn) {
-                    faqItem.querySelector('.guide-btn').onclick = () => openImageModal(item.guide);
+                    // SILENT PRELOAD: Forces browser to download image in background immediately
+                    const preloader = new Image();
+                    preloader.src = item.guide.trim();
+                    
+                    faqItem.querySelector('.guide-btn').onclick = () => openImageModal(item.guide.trim());
                 }
                 
                 categoryDiv.appendChild(faqItem);
@@ -202,12 +212,20 @@
 
     function openImageModal(url) {
         document.getElementById('modalError').style.display = 'none';
-        document.getElementById('modalImgSrc').style.display = 'block';
+        document.getElementById('modalImgSrc').style.display = 'none';
+        document.getElementById('modalLoading').style.display = 'block'; // Show loader first
+        
         document.getElementById('modalImgSrc').src = url;
         document.getElementById('imageModal').style.display = 'flex';
     }
 
+    function hideLoader() {
+        document.getElementById('modalLoading').style.display = 'none';
+        document.getElementById('modalImgSrc').style.display = 'block';
+    }
+
     function showError() {
+        document.getElementById('modalLoading').style.display = 'none';
         document.getElementById('modalImgSrc').style.display = 'none';
         document.getElementById('modalError').style.display = 'block';
     }
