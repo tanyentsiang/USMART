@@ -57,6 +57,58 @@
         #modalImgSrc { max-width: 100%; max-height: 70vh; border-radius: 6px; object-fit: contain; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
         #modalError { display: none; color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 6px; text-align: center; margin-top: 10px; font-size: 13px; width: 100%; box-sizing: border-box; border: 1px solid #f5c6cb; }
         #modalLoading { display: none; padding: 30px; color: #666; font-size: 14px; font-weight: bold; }
+
+        /* =========================================
+           MOBILE RESPONSIVE ADJUSTMENTS
+           ========================================= */
+        @media (max-width: 768px) {
+            body { 
+                flex-direction: column; 
+            }
+            .left-panel { 
+                flex: 1; /* Takes available space above */
+                width: 100%; 
+                padding: 15px; 
+            }
+            .right-panel { 
+                flex: none; /* Stops growing */
+                width: 100%; 
+                padding: 15px; 
+                border-left: none; 
+                border-top: 1px solid #eaeaea; 
+                box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+                height: auto;
+                z-index: 100;
+            }
+            .container { 
+                padding: 15px; 
+            }
+            .builder-textarea {
+                height: 100px; /* Fixed height for the editor on mobile */
+                flex-grow: 0;
+            }
+            .faq-item {
+                flex-direction: column; /* Stacks the title above the buttons */
+                align-items: flex-start;
+            }
+            .btn-group {
+                margin-top: 10px;
+                width: 100%;
+                flex-wrap: wrap; /* Allows buttons to wrap nicely */
+            }
+            .faq-info {
+                padding-right: 0;
+                width: 100%;
+            }
+            .modal-content {
+                max-width: 95%; /* Makes image popup wider on phone */
+                padding: 15px;
+                min-width: 0;
+            }
+            .notification {
+                bottom: 180px; /* Adjusts toast position above the mobile text area */
+            }
+        }
     </style>
 </head>
 <body>
@@ -85,7 +137,7 @@
 <div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span class="modal-instructions">👉 Right-click image and select "Copy image"</span>
+            <span class="modal-instructions">👉 Long-press image to copy</span>
             <button class="close-modal-btn" onclick="closeModal(event)">Close</button>
         </div>
         
@@ -173,7 +225,6 @@
                 faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
                 
                 if (viewGuideBtn) {
-                    // SILENT PRELOAD: Forces browser to download image in background immediately
                     const preloader = new Image();
                     preloader.src = item.guide.trim();
                     
@@ -213,7 +264,7 @@
     function openImageModal(url) {
         document.getElementById('modalError').style.display = 'none';
         document.getElementById('modalImgSrc').style.display = 'none';
-        document.getElementById('modalLoading').style.display = 'block'; // Show loader first
+        document.getElementById('modalLoading').style.display = 'block';
         
         document.getElementById('modalImgSrc').src = url;
         document.getElementById('imageModal').style.display = 'flex';
