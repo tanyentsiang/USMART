@@ -30,7 +30,7 @@
         .faq-preview { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         /* Buttons */
-        .btn-group { display: flex; gap: 6px; }
+        .btn-group { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
         .add-btn { background-color: #e7f1ff; color: #007bff; border: 1px solid #b8daff; padding: 8px 10px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; white-space: nowrap; }
         .add-btn.cn-btn { background-color: #f3f0fa; color: #6f42c1; border-color: #d6cce9; }
         .add-btn.guide-btn { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
@@ -94,7 +94,7 @@
             .btn-group {
                 margin-top: 10px;
                 width: 100%;
-                flex-wrap: wrap; /* Allows buttons to wrap nicely */
+                justify-content: flex-start;
             }
             .faq-info {
                 padding-right: 0;
@@ -205,9 +205,18 @@
                 const faqItem = document.createElement('div');
                 faqItem.className = 'faq-item';
                 
-                const viewGuideBtn = (item.guide.trim().length > 5) 
-                    ? `<button class="add-btn guide-btn">🖼️ View Guide</button>` 
-                    : '';
+                // Parse multi-links separated by commas
+                const rawUrls = item.guide.split(',');
+                const validUrls = rawUrls.map(u => u.trim()).filter(u => u.length > 5);
+                
+                let viewGuideBtns = '';
+                if (validUrls.length === 1) {
+                    viewGuideBtns = `<button class="add-btn guide-btn" data-url="${validUrls[0]}">🖼️ View Guide</button>`;
+                } else if (validUrls.length > 1) {
+                    validUrls.forEach((url, index) => {
+                        viewGuideBtns += `<button class="add-btn guide-btn" data-url="${url}">🖼️ Guide ${index + 1}</button>`;
+                    });
+                }
 
                 faqItem.innerHTML = `
                     <div class="faq-info">
@@ -217,19 +226,24 @@
                     <div class="btn-group">
                         <button class="add-btn en-btn">Add EN</button>
                         <button class="add-btn cn-btn">添加中文</button>
-                        ${viewGuideBtn}
+                        ${viewGuideBtns}
                     </div>
                 `;
                 
                 faqItem.querySelector('.en-btn').onclick = () => appendToDraft(item.en);
                 faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
                 
-                if (viewGuideBtn) {
-                    const preloader = new Image();
-                    preloader.src = item.guide.trim();
+                // Attach click events dynamically to all generated image buttons
+                const generatedGuideBtns = faqItem.querySelectorAll('.guide-btn');
+                generatedGuideBtns.forEach(btn => {
+                    const btnUrl = btn.getAttribute('data-url');
                     
-                    faqItem.querySelector('.guide-btn').onclick = () => openImageModal(item.guide.trim());
-                }
+                    // Preload the image for faster viewing
+                    const preloader = new Image();
+                    preloader.src = btnUrl;
+                    
+                    btn.onclick = () => openImageModal(btnUrl);
+                });
                 
                 categoryDiv.appendChild(faqItem);
             });
