@@ -17,8 +17,11 @@
 
         /* Left Panel Content Styling */
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { font-size: 18px; margin-top: 0; color: #1a1a1a; }
-        .subtitle { font-size: 11px; color: #666; margin-top: -10px; margin-bottom: 15px; font-weight: 500; }
+        .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        h2 { font-size: 18px; margin-top: 0; color: #1a1a1a; margin-bottom: 2px; }
+        .subtitle { font-size: 11px; color: #666; font-weight: 500; }
+        .request-btn { background-color: #f8f9fa; color: #495057; border: 1px solid #ced4da; padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s; }
+        .request-btn:hover { background-color: #e2e6ea; }
         .search-bar { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; outline: none; }
         .search-bar:focus { border-color: #007bff; }
         .category-container { margin-bottom: 20px; }
@@ -38,6 +41,9 @@
         .loading-state { text-align: center; padding: 40px; color: #666; font-size: 13px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
 
         /* Right Panel Builder Styling */
+        .quick-actions { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .quick-btn { background-color: #f1f3f5; color: #495057; border: 1px solid #dee2e6; padding: 6px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .quick-btn:hover { background-color: #e9ecef; }
         .builder-textarea { width: 100%; flex-grow: 1; border: 1px solid #ccc; border-radius: 6px; padding: 15px; box-sizing: border-box; font-family: inherit; font-size: 13px; line-height: 1.5; resize: none; outline: none; margin-bottom: 15px; }
         .builder-textarea:focus { border-color: #28a745; }
         .builder-actions { display: flex; gap: 10px; width: 100%; }
@@ -58,56 +64,19 @@
         #modalError { display: none; color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 6px; text-align: center; margin-top: 10px; font-size: 13px; width: 100%; box-sizing: border-box; border: 1px solid #f5c6cb; }
         #modalLoading { display: none; padding: 30px; color: #666; font-size: 14px; font-weight: bold; }
 
-        /* =========================================
-           MOBILE RESPONSIVE ADJUSTMENTS
-           ========================================= */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            body { 
-                flex-direction: column; 
-            }
-            .left-panel { 
-                flex: 1; /* Takes available space above */
-                width: 100%; 
-                padding: 15px; 
-            }
-            .right-panel { 
-                flex: none; /* Stops growing */
-                width: 100%; 
-                padding: 15px; 
-                border-left: none; 
-                border-top: 1px solid #eaeaea; 
-                box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
-                height: auto;
-                z-index: 100;
-            }
-            .container { 
-                padding: 15px; 
-            }
-            .builder-textarea {
-                height: 100px; /* Fixed height for the editor on mobile */
-                flex-grow: 0;
-            }
-            .faq-item {
-                flex-direction: column; /* Stacks the title above the buttons */
-                align-items: flex-start;
-            }
-            .btn-group {
-                margin-top: 10px;
-                width: 100%;
-                justify-content: flex-start;
-            }
-            .faq-info {
-                padding-right: 0;
-                width: 100%;
-            }
-            .modal-content {
-                max-width: 95%; /* Makes image popup wider on phone */
-                padding: 15px;
-                min-width: 0;
-            }
-            .notification {
-                bottom: 180px; /* Adjusts toast position above the mobile text area */
-            }
+            body { flex-direction: column; }
+            .left-panel { flex: 1; width: 100%; padding: 15px; }
+            .right-panel { flex: none; width: 100%; padding: 15px; border-left: none; border-top: 1px solid #eaeaea; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); height: auto; z-index: 100; }
+            .container { padding: 15px; }
+            .header-row { flex-direction: column; gap: 10px; }
+            .builder-textarea { height: 120px; flex-grow: 0; }
+            .faq-item { flex-direction: column; align-items: flex-start; }
+            .btn-group { margin-top: 10px; width: 100%; justify-content: flex-start; }
+            .faq-info { padding-right: 0; width: 100%; }
+            .modal-content { max-width: 95%; padding: 15px; min-width: 0; }
+            .notification { bottom: 180px; }
         }
     </style>
 </head>
@@ -115,8 +84,13 @@
 
 <div class="left-panel">
     <div class="container">
-        <h2>RM Dashboard</h2>
-        <div class="subtitle">Bilingual Response Matrix | Architecture: Google Sheets Cloud Sync</div>
+        <div class="header-row">
+            <div>
+                <h2>RM Dashboard</h2>
+                <div class="subtitle">Bilingual Response Matrix | Architecture: Google Sheets Cloud Sync</div>
+            </div>
+            <a href="https://forms.google.com" target="_blank" class="request-btn">📝 Request Template</a>
+        </div>
         <input type="text" id="searchBox" class="search-bar" placeholder="Enter keywords (e.g., funding, 入金, options)..." onkeyup="filterFAQ()">
         <div id="faq-container">
             <div class="loading-state">⏳ Connecting to Google Sheets database... Fetching latest matrices...</div>
@@ -125,6 +99,14 @@
 </div>
 
 <div class="right-panel">
+    <!-- Quick Insert Action Bar -->
+    <div class="quick-actions">
+        <button class="quick-btn" onclick="appendToDraft('Hi [Client Name],\n\n')">+ Hi [Name]</button>
+        <button class="quick-btn" onclick="appendToDraft('您好 [Client Name]，\n\n')">+ 您好 [Name]</button>
+        <button class="quick-btn" onclick="appendToDraft('\n\nBest Regards,\nuSMART Team')">+ Best Regards</button>
+        <button class="quick-btn" onclick="appendToDraft('\n\n祝好，\nuSMART 团队')">+ 祝好</button>
+    </div>
+    
     <textarea id="draftArea" class="builder-textarea" placeholder="Click 'Add' buttons to load reply templates and edit your response here..."></textarea>
     <div class="builder-actions">
         <button class="action-btn clear-btn" onclick="clearDraft()">Clear / 清空</button>
@@ -170,7 +152,7 @@
                 }
             },
             error: function(error) {
-                document.getElementById('faq-container').innerHTML = '<div class="loading-state" style="color: #d64545;"><strong>Sync Error:</strong> Failed to load data. Ensure sheet is published as CSV.</div>';
+                document.getElementById('faq-container').innerHTML = '<div class="loading-state" style="color: #d64545;"><strong>Sync Error:</strong> Failed to load data.</div>';
             }
         });
     };
@@ -186,7 +168,8 @@
             const title = row['FAQ Title'];
             const enReply = row['English Response Template'];
             const cnReply = row['Chinese Response Template'];
-            const guideUrl = row['Guide URL'] || ''; 
+            // Fallback in case there's an accidental space in the Google Sheet column name
+            const guideUrl = row['Guide URL'] || row['Guide URL '] || ''; 
             
             if (!catID || !title) return;
             const groupKey = `${catID}|${catName}`;
@@ -205,16 +188,18 @@
                 const faqItem = document.createElement('div');
                 faqItem.className = 'faq-item';
                 
-                // Parse multi-links separated by commas
-                const rawUrls = item.guide.split(',');
+                // Process Multiple Links (split by comma)
+                const rawUrls = String(item.guide || "").split(',');
                 const validUrls = rawUrls.map(u => u.trim()).filter(u => u.length > 5);
                 
                 let viewGuideBtns = '';
+                
+                // Generate the button HTML directly
                 if (validUrls.length === 1) {
-                    viewGuideBtns = `<button class="add-btn guide-btn" data-url="${validUrls[0]}">🖼️ View Guide</button>`;
+                    viewGuideBtns = `<button class="add-btn guide-btn" onclick="openImageModal('${validUrls[0]}')">🖼️ View Guide</button>`;
                 } else if (validUrls.length > 1) {
                     validUrls.forEach((url, index) => {
-                        viewGuideBtns += `<button class="add-btn guide-btn" data-url="${url}">🖼️ Guide ${index + 1}</button>`;
+                        viewGuideBtns += `<button class="add-btn guide-btn" onclick="openImageModal('${url}')">🖼️ Guide ${index + 1}</button>`;
                     });
                 }
 
@@ -233,18 +218,6 @@
                 faqItem.querySelector('.en-btn').onclick = () => appendToDraft(item.en);
                 faqItem.querySelector('.cn-btn').onclick = () => appendToDraft(item.cn);
                 
-                // Attach click events dynamically to all generated image buttons
-                const generatedGuideBtns = faqItem.querySelectorAll('.guide-btn');
-                generatedGuideBtns.forEach(btn => {
-                    const btnUrl = btn.getAttribute('data-url');
-                    
-                    // Preload the image for faster viewing
-                    const preloader = new Image();
-                    preloader.src = btnUrl;
-                    
-                    btn.onclick = () => openImageModal(btnUrl);
-                });
-                
                 categoryDiv.appendChild(faqItem);
             });
             container.appendChild(categoryDiv);
@@ -253,7 +226,7 @@
 
     function appendToDraft(text) {
         const draftArea = document.getElementById("draftArea");
-        draftArea.value += (draftArea.value ? "\n\n" : "") + (text || "");
+        draftArea.value += (draftArea.value ? (draftArea.value.endsWith("\n\n") ? "" : "\n\n") : "") + (text || "");
     }
 
     function clearDraft() { document.getElementById("draftArea").value = ""; }
@@ -275,6 +248,7 @@
         });
     }
 
+    // Modal Control
     function openImageModal(url) {
         document.getElementById('modalError').style.display = 'none';
         document.getElementById('modalImgSrc').style.display = 'none';
